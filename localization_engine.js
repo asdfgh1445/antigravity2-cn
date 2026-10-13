@@ -551,6 +551,40 @@ function generateJs() {
                         else if (unitLower === "yr") unitStr = USE_TW ? "年前" : "年前";
                         return num + unitStr;
                     });
+                } else if (/^(\\d+)(s|m|h|d|w|mo|yr)\\s+ago$/i.test(valNorm)) {
+                    newVal = valNorm.replace(/^(\\d+)(s|m|h|d|w|mo|yr)\\s+ago$/i, (match, num, unit) => {
+                        const unitLower = unit.toLowerCase();
+                        let unitStr = "";
+                        if (unitLower === "s") unitStr = USE_TW ? "秒前" : "秒前";
+                        else if (unitLower === "m") unitStr = USE_TW ? "分鐘前" : "分钟前";
+                        else if (unitLower === "h") unitStr = USE_TW ? "小時前" : "小时前";
+                        else if (unitLower === "d") unitStr = USE_TW ? "天前" : "天前";
+                        else if (unitLower === "w") unitStr = USE_TW ? "週前" : "周前";
+                        else if (unitLower === "mo") unitStr = USE_TW ? "個月前" : "个月前";
+                        else if (unitLower === "yr") unitStr = USE_TW ? "年前" : "年前";
+                        return num + unitStr;
+                    });
+                } else if (/^See (\\d+) more$/i.test(valNorm)) {
+                    newVal = valNorm.replace(/^See (\\d+) more$/i, (match, num) => {
+                        return USE_TW ? ("查看另外 " + num + " 個") : ("查看另外 " + num + " 个");
+                    });
+                } else if (/^Your plan's baseline quota will refresh on (.+?)\\.?\\s*To continue using this model now, enable AI Credit overages\\.?$/i.test(valNorm)) {
+                    newVal = valNorm.replace(/^Your plan's baseline quota will refresh on (.+?)\\.?\\s*To continue using this model now, enable AI Credit overages\\.?$/i, (match, when) => {
+                        return USE_TW ? ("您方案的基準配額將於 " + when + " 刷新。如需立即繼續使用此模型，請啟用 AI 點數超額使用。") : ("您方案的基础配额将于 " + when + " 刷新。如需立即继续使用此模型，请启用 AI 额度超量使用。");
+                    });
+                } else if (/^You have hit your weekly limit, it refreshes in (.+?)\\. If on a supported paid plan, you can use AI credits in the interim or upgrade to a higher tier\\.$/i.test(valNorm)) {
+                    newVal = valNorm.replace(/^You have hit your weekly limit, it refreshes in (.+?)\\. If on a supported paid plan, you can use AI credits in the interim or upgrade to a higher tier\\.$/i, (match, when) => {
+                        return USE_TW ? ("您已達到每週額度限制，將於 " + when + " 刷新。若您使用受支援的付費方案，可在此期間使用 AI 點數，或升級至更高層級。") : ("您已达到每周额度限制，将于 " + when + " 刷新。若您使用受支持的付费计划，可在此期间使用 AI 额度，或升级至更高层级。");
+                    });
+                } else if (/^You have hit your weekly limit, the (\\d+)-hour limit does not currently apply\\. Your weekly limit will fully refresh in (.+?)\\.$/i.test(valNorm)) {
+                    newVal = valNorm.replace(/^You have hit your weekly limit, the (\\d+)-hour limit does not currently apply\\. Your weekly limit will fully refresh in (.+?)\\.$/i, (match, h, when) => {
+                        return USE_TW ? ("您已達到每週額度限制，" + h + " 小時限制目前不適用。您的每週額度限制將於 " + when + " 完全更新。") : ("您已达到每周额度限制，" + h + " 小时限制目前不适用。您的每周额度限制将于 " + when + " 完全刷新。");
+                    });
+                } else if (/^(Rules|Skills|Mcp Tools): ([\\d,]+) tokens$/i.test(valNorm)) {
+                    newVal = valNorm.replace(/^(Rules|Skills|Mcp Tools): ([\\d,]+) tokens$/i, (match, kind, num) => {
+                        const kindMap = { "Rules": USE_TW ? "規則" : "规则", "Skills": "技能", "Mcp Tools": "MCP 工具" };
+                        return (kindMap[kind] || kind) + "：" + num + " Token";
+                    });
                 } else if (/^(.+?): context deadline exceeded$/i.test(valNorm)) {
                     newVal = valNorm.replace(/^(.+?): context deadline exceeded$/i, (match, prefix) => {
                         return prefix + (USE_TW ? ": 要求逾時 (context deadline exceeded)" : ": 请求超时 (context deadline exceeded)");
